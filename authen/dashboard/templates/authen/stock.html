@@ -1,0 +1,20 @@
+{% extends 'authen/base.html' %}
+
+{% block title %}Stock{% endblock %}
+
+{% block content %}
+
+<form method='post'>
+    {% csrf_token %}
+    {{form.as_p}}
+    <input type='submit' value='login'>
+</form>
+
+{% if image %}
+    {% load staticfiles %}
+    <img src="{%static image %}" alt="image frame"/>
+{% endif %}
+
+<a href="/authen/logout/">Log out</a>
+{% endblock %}
+

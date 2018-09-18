@@ -1,0 +1,24 @@
+{% extends 'authen/base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<form method='post'>
+    {% csrf_token %}
+
+    <h1>Please login</h1>
+    <!-- {% for field in forms %}
+    <input type='text' placeholder="{{field.name}}" name='{{field.name}}'>
+    {% endfor %} -->
+
+        {{forms.as_p}}
+
+    <br>
+    <input type='submit' value='login' style='margin-left: 10px'>
+    {% if error %}
+        <p>Error: {{error}}</p>
+    {% endif %}
+</form>
+
+
+{% endblock %}
