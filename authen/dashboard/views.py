@@ -63,12 +63,6 @@ def handle_post(request):
 
     return render(request, 'authen/test_form.html', {'form': form})
 
-def wrap_draw_line(q, name):
-    stock_name = '.'.join((name, 'XSHE'))
-    authenticaiton('18951518869', 'ceshi123')
-    file_name = draw_line(stock_name, 'PE', days=600)
-    q.put(file_name)
-
 
 def send_message(message):
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
