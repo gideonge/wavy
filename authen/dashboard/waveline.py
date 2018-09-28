@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 import json
 import jqdatasdk
-from mpl_finance import candlestick_ohlc
+#from mpl_finance import candlestick_ohlc
 import matplotlib.ticker as mticker
 import matplotlib.dates as mdates
 import numpy as np
@@ -11,27 +11,28 @@ import  matplotlib.font_manager as fm
 import pika
 # -*- coding: UTF-8 -*-
 # 画K线图
-def draw_candle_line(stock_name, username, password):
-    stock_name = '000001.XSHE'
-    jqdatasdk.auth(username, password)
-    price = jqdatasdk.get_price(security=stock_name, frequency='1d')
-    # 获取时间序列，并且转化为可以使用的格式
-    time_index = price.index
-    timelist = [mdates.date2num(i.to_pydatetime()) for i in time_index]  # Convert to date struct
-    # 生成candlestick能用的数据格式。这种数据的格式是六元组，time, open, high, low, close, volume。这六元组又由一个tuple组成。
-    data = tuple((timelist[i], price.open[i], price.high[i], price.low[i], price.close[i]) for i in range(len(price)))
-    fig = plt.figure()
-    fig.set_dpi(120)
-    ax1 = plt.subplot2grid((1,1),(0,0))
-    plt.xlabel('Date')
-    plt.ylabel('Price')
-    plt.title('Instrument: 000001.XSHE')
-    candlestick_ohlc(ax1, data, width=0.65, colorup='#77d879', colordown='#db3f3f')
-    ax1.xaxis.set_major_locator(mticker.MaxNLocator(15))
-    ax1.xaxis.set_major_formatter(mdates.DateFormatter('%y-%m-%d'))
-    plt.xticks(rotation=45)
-    plt.savefig('{}.png'.format(stock_name), dpi=120)
-    plt.show()
+
+# def draw_candle_line(stock_name, username, password):
+#     stock_name = '000001.XSHE'
+#     jqdatasdk.auth(username, password)
+#     price = jqdatasdk.get_price(security=stock_name, frequency='1d')
+#     # 获取时间序列，并且转化为可以使用的格式
+#     time_index = price.index
+#     timelist = [mdates.date2num(i.to_pydatetime()) for i in time_index]  # Convert to date struct
+#     # 生成candlestick能用的数据格式。这种数据的格式是六元组，time, open, high, low, close, volume。这六元组又由一个tuple组成。
+#     data = tuple((timelist[i], price.open[i], price.high[i], price.low[i], price.close[i]) for i in range(len(price)))
+#     fig = plt.figure()
+#     fig.set_dpi(120)
+#     ax1 = plt.subplot2grid((1,1),(0,0))
+#     plt.xlabel('Date')
+#     plt.ylabel('Price')
+#     plt.title('Instrument: 000001.XSHE')
+#     candlestick_ohlc(ax1, data, width=0.65, colorup='#77d879', colordown='#db3f3f')
+#     ax1.xaxis.set_major_locator(mticker.MaxNLocator(15))
+#     ax1.xaxis.set_major_formatter(mdates.DateFormatter('%y-%m-%d'))
+#     plt.xticks(rotation=45)
+#     plt.savefig('{}.png'.format(stock_name), dpi=120)
+#     plt.show()
 
 # 获取百分比
 def generate_pct(max_value, min_value, pct):
@@ -138,7 +139,7 @@ def draw_diagram(total_fac, name, stock, full_name):
     plt.tight_layout()
     #stock_name = instruments(stock, country='cn').symbol
     file_name = '{}_{}({}).png'.format(full_name, name, total_fac.index[-1])
-    plt.savefig('C:/develop/web/mysite/authen/dashboard/static/'+file_name, dpi=240)
+    plt.savefig('./static/'+file_name, dpi=240)
     return file_name
     #plt.show()
     #plt.subplots_adjust(wspace=0.05, hspace=0.05)
@@ -156,7 +157,6 @@ def draw_line(stock_name, type, days=600):
     date = '%d-%d-%d' % (now.year, now.month, now.day)
     df = jqdatasdk.get_fundamentals_continuously(q, end_date=date, count=days)
 
-
     print(df['pe_ratio'].index)
 
     if type == 'PE':
@@ -168,7 +168,8 @@ def authenticaiton(username, password):
     jqdatasdk.auth(username, password)
 
 
-config_file = 'c:/develop/web/mysite/authen/dashboard/pass.conf'
+config_file = './pass.conf'
+
 def read_account(file_name):
     rf = open(file_name, 'r')
     account = rf.readlines()[0]
@@ -177,10 +178,10 @@ def read_account(file_name):
     password = account[1]
     return name,password
 
-def wrap_draw_line(name, day, choice):
+def wrap_draw_line(stock, day, choice):
     name,password = read_account(config_file)
     authenticaiton(name, password)
-    stock_name = jqdatasdk.normalize_code(name)
+    stock_name = jqdatasdk.normalize_code(stock)
     print(stock_name)
     file_name = draw_line(stock_name, choice, days=day)
     return file_name
@@ -191,7 +192,6 @@ def callback(ch, method, properties, body):
     dic = json.loads(body)
     print(' [*] Receive message %s' % body)
     file_name = wrap_draw_line(dic['stock'], dic['days'], dic['choice'])
-    
     send_message(file_name)
 
 # send back ack message
@@ -217,8 +217,8 @@ def kickoff():
     channel.start_consuming()
 
 if __name__ == '__main__':
-    kickoff()
-    #wrap_draw_line('000002', 600)
+    #kickoff()
+    wrap_draw_line('000002', 600, 'PE')
 
 
 # draw_line('601877.XSHG', 'PE')
