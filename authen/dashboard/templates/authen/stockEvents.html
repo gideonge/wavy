@@ -1,0 +1,150 @@
+{% extends 'authen/index.html' %}
+{% block title %}
+<title>Financial Data</title>
+{% endblock %}
+
+{%block finance%}active{%endblock%}
+
+{% block stock_script %}
+		{% load static %}
+		<link rel="stylesheet" href="{%static 'amcharts/style.css' %}" type="text/css">
+		<script src="{%static 'amcharts/amcharts.js' %}" type="text/javascript"></script>
+		<script src="{%static 'amcharts/serial.js' %}" type="text/javascript"></script>
+		<script src="{%static 'amcharts/amstock.js' %}" type="text/javascript"></script>
+
+		<script>
+			AmCharts.ready(function () {
+				//generateChartData();
+				createStockChart();
+			});
+
+			var chartData = [
+			{% block data_source %}
+			{% endblock %}
+			];
+
+			var chart;
+
+			function createStockChart() {
+				chart = new AmCharts.AmStockChart();
+				// DATASETS //////////////////////////////////////////
+				var dataSet = new AmCharts.DataSet();
+				dataSet.color = "#111111";
+				dataSet.fieldMappings = [{
+					fromField: "value",
+					toField: "value"
+				}];
+				dataSet.dataProvider = chartData;
+				dataSet.categoryField = "date";
+
+				// set data sets to the chart
+				chart.dataSets = [dataSet];
+
+				// PANELS ///////////////////////////////////////////
+				// first stock panel
+				var stockPanel1 = new AmCharts.StockPanel();
+				stockPanel1.showCategoryAxis = true;
+				stockPanel1.title = "{% block title_name %}{% endblock %}";
+				
+				// graph of first stock panel
+				var graph1 = new AmCharts.StockGraph();
+				graph1.valueField = "value";
+				stockPanel1.addStockGraph(graph1);
+
+				// create stock legend
+				var stockLegend1 = new AmCharts.StockLegend();
+				stockLegend1.valueTextRegular = " ";
+				stockLegend1.markerType = "none";
+				stockPanel1.stockLegend = stockLegend1;
+				
+				
+				chart.panels = [stockPanel1]
+
+				// OTHER SETTINGS ////////////////////////////////////
+				var scrollbarSettings = new AmCharts.ChartScrollbarSettings();
+				scrollbarSettings.graph = graph1;
+				scrollbarSettings.updateOnReleaseOnly = false;
+				chart.chartScrollbarSettings = scrollbarSettings;
+
+				var cursorSettings = new AmCharts.ChartCursorSettings();
+				cursorSettings.valueBalloonsEnabled = true;
+				cursorSettings.graphBulletSize = 1;
+				chart.chartCursorSettings = cursorSettings;
+
+
+				// PERIOD SELECTOR ///////////////////////////////////
+				var periodSelector = new AmCharts.PeriodSelector();
+				periodSelector.periods = [{
+					period: "DD",
+					count: 10,
+					label: "10 days"
+				}, {
+					period: "MM",
+					count: 1,
+					label: "1 month"
+				}, {
+					period: "YYYY",
+					count: 1,
+					selected:true,
+					label: "1 year"
+				}, {
+					period: "YTD",
+					label: "YTD"
+				}, {
+					period: "MAX",
+					label: "MAX"
+				}];
+				chart.periodSelector = periodSelector;
+
+
+				var panelsSettings = new AmCharts.PanelsSettings();
+				panelsSettings.marginRight = 16;
+				panelsSettings.marginLeft = 16;
+				panelsSettings.usePrefixes = true;
+				chart.panelsSettings = panelsSettings;
+
+                {% block event %}
+				{% endblock %}
+				chart.write('chartdiv');
+			}
+
+		</script>
+{% endblock %}
+
+{% block main %}	
+<div style='margin-top: 20px'>
+<form method='post'>
+	{% csrf_token %}
+	<table>
+		<tr>
+			<td><label for="id_stock_name">Stock Code:</label></td>
+			<td><input type="text" name="stock_name" maxlength="6" required id="id_stock_name" /></td>
+		</tr>
+		<tr>
+			<td><label for="id_days_start">Start:</label></td>
+			<td><input type="date" name="start_date" required id="id_days_start"/></td>
+		</tr>
+		<tr>
+			<td><label for="id_days_end">End:</label></td>
+			<td><input type="date" name="end_date" required id="id_days_end"/></td>
+		</tr>
+		<tr>
+			<td><label for="id_choice">PB/PE:</label></td>
+			<td>	
+				<select name="choice" id="id_choice">
+					<option value="PB">PB Ratio</option>
+					<option value="PE">TTM Ratio</option>
+				 </select>
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><input type='submit' value='Submit'></td>
+		</tr>
+	</table>
+</form>
+</div>
+
+{% block chart %}
+{% endblock %}
+{% endblock %}

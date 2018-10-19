@@ -1,0 +1,37 @@
+{% extends 'authen/stockEvents.html' %}
+{% block data_source %}
+{% if tool %}
+    {{tool.output}}
+{% endif %}
+{% endblock %}
+
+{% block title_name %}{{title_name}}{% endblock %}
+
+{% block chart %}
+{% if tool %}
+<div id="chartdiv" style="width:100%; height:600px;"></div>
+{% endif %}
+{% endblock %}
+
+{% block event %}
+var e0 = {
+    date: new Date({{event.date}}),
+    type: "sign",
+    backgroundColor: "#85CDE6",
+    graph: graph1,
+    text: "S",
+    description: "{{event.description}}"
+};
+var e1 = {
+    date: new Date({{e1.date}}),
+    type: "flag",
+    backgroundColor: "#FFFFFF",
+    backgroundAlpha: 0.5,
+    graph: graph1,
+    text: "F",
+    description: "{{e1.description}}"
+};
+
+
+dataSet.stockEvents = [e0, e1];
+{% endblock %}

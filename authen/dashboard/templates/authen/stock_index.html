@@ -1,0 +1,26 @@
+{% extends 'authen/index.html' %}
+
+{% block title %}
+<title>Stock</title>
+{% endblock %}
+
+{% block stock_evaluation %}
+active
+{% endblock %}
+
+{% block main %}
+<div style='margin-top: 20px'>
+<form method='post'>
+    {% csrf_token %}
+    {{form.as_p}}
+    <input type='submit' value='Submit'>
+</form>
+
+{% if image %}
+    {% load staticfiles %}
+    <img src="{%static image %}" alt="image frame"/>
+{% endif %}
+
+{% endblock %}
+
+</div>

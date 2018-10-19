@@ -39,6 +39,12 @@ def generate_pct(max_value, min_value, pct):
     return round((max_value - min_value) * pct + min_value, 2)
 
 def draw_diagram(total_fac, name, stock, full_name):
+    '''
+    total_fac: Data
+    name: PE-TTM, PB, etc. 
+    stock: Stock Code
+    full_name: Stock display name
+    '''
     # 解决中文乱码问题
     myfont=fm.FontProperties(fname="C:\Windows\Fonts\STXIHEI.TTF")
     #total_fac
@@ -138,7 +144,7 @@ def draw_diagram(total_fac, name, stock, full_name):
     ax1.set_title('{} {} {} - {}'.format(full_name, name, total_fac.index[0], total_fac.index[-1]), fontname='华文细黑',fontproperties=myfont)
     plt.tight_layout()
     #stock_name = instruments(stock, country='cn').symbol
-    file_name = '{}_{}({}).png'.format(full_name, name, total_fac.index[-1])
+    file_name = '{}_{}({}).png'.format(full_name, name, total_fac.index[-1].date())
     plt.savefig('./static/'+file_name, dpi=240)
     return file_name
     #plt.show()
@@ -217,8 +223,8 @@ def kickoff():
     channel.start_consuming()
 
 if __name__ == '__main__':
-    #kickoff()
-    wrap_draw_line('000002', 600, 'PE')
+    kickoff()
+    #wrap_draw_line('000002', 600, 'PE')
 
 
 # draw_line('601877.XSHG', 'PE')

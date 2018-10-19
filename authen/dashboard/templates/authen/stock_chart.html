@@ -1,0 +1,109 @@
+{% extends 'authen/index.html' %}
+
+{% block title %}
+<title>Stock Candle Stick</title>
+{% endblock %}
+
+{% block candle_stick %}active{% endblock %}
+
+{% block stock_script %}
+
+		{% load static %}
+		<link rel="stylesheet" href="{%static 'amcharts/style.css' %}" type="text/css">
+		<script type="text/javascript" src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+		<script type="text/javascript" src="https://www.amcharts.com/lib/3/serial.js"></script>
+		<script type="text/javascript">
+			AmCharts.makeChart("chartdiv",
+				{
+					"type": "serial",
+					"categoryField": "date",
+					"dataDateFormat": "YYYY-MM-DD",
+					"theme": "default",
+					"categoryAxis": {
+						"parseDates": true
+					},
+					"chartCursor": {
+						"enabled": true
+					},
+					"chartScrollbar": {
+						"enabled": true,
+						"graph": "g1",
+						"graphType": "line",
+						"scrollbarHeight": 30
+					},
+					"trendLines": [],
+					"graphs": [
+						{
+							"balloonText": "Open:<b>[[open]]</b><br>Low:<b>[[low]]</b><br>High:<b>[[high]]</b><br>Close:<b>[[close]]</b><br>",
+							"closeField": "close",
+							"fillAlphas": 0.9,
+							"fillColors": "#7f8da9",
+							"highField": "high",
+							"id": "g1",
+							"lineColor": "#7f8da9",
+							"lowField": "low",
+							"negativeFillColors": "#db4c3c",
+							"negativeLineColor": "#db4c3c",
+							"openField": "open",
+							"title": "Price:",
+							"type": "candlestick",
+							"valueField": "close"
+						}
+					],
+					"guides": [],
+					"valueAxes": [
+						{
+							"id": "ValueAxis-1"
+						}
+					],
+					"allLabels": [],
+					"balloon": {},
+					"titles": [],
+					"dataProvider": [
+					{% block data_source %}
+					{% endblock %}
+					]
+				}
+			);
+		</script>
+{% endblock %}
+
+{% block main %}
+<div style='margin-top: 20px'>
+	<form method='post'>
+	{% csrf_token %}
+		<table>
+			<tr>
+				<td>Stock Code</td>
+				<td><input type="text" maxlength="6" required name="stock_name"></td>
+			</tr>
+			<tr>
+				<td>Start Date</td>
+				<td><input type="date" required name="start_date"></td>
+			</tr>
+			<tr>
+				<td>End Date</td>
+				<td><input type="date" required name="end_date"></td>
+			</tr>
+			{% if error %}
+			<tr>
+				<td>
+					Error :
+				</td>
+				<td>
+					{{error}}
+				</td>
+			</tr>
+			{% endif %}
+			<tr>
+				<td></td>
+				<td><input type="submit" name="Submit"></td>
+				<td></td>
+			</tr>
+		</table>
+	</form>
+</div>
+
+{% block chart %}
+{% endblock %}
+{% endblock %}
